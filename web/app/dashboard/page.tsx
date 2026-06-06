@@ -23,7 +23,7 @@ function fmtHour(h: number) {
 
 const COLORS = ["#CC785C", "#5E6B7D", "#7A8B6F", "#C9A87C"];
 const CARD =
-  "rounded-2xl border border-[#EEECE4] bg-white p-6 shadow-[0_1px_3px_rgba(20,20,19,0.04),0_12px_32px_-18px_rgba(20,20,19,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_2px_6px_rgba(20,20,19,0.06),0_18px_44px_-18px_rgba(20,20,19,0.18)]";
+  "rounded-2xl border border-[#EEECE4] bg-white p-6 shadow-[0_1px_3px_rgba(20,20,19,0.04),0_12px_32px_-18px_rgba(20,20,19,0.12)]";
 const LABEL = "text-xs font-medium uppercase tracking-[0.14em] text-[#9B988F]";
 
 const icons: Record<string, ReactNode> = {
