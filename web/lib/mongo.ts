@@ -18,11 +18,7 @@ if (!cached) {
 export async function connectDB() {
   if (cached.conn) return cached.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(URI, {
-      dbName: "claudex",
-    });
-  }
+  if (!cached.promise) cached.promise = mongoose.connect(URI!, { dbName: "claudex" });
 
   cached.conn = await cached.promise;
   return cached.conn;
