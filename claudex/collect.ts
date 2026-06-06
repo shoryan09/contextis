@@ -244,20 +244,19 @@ async function enableAutostart() {
       fs.writeFileSync(vbs, content);
       // remove the legacy Startup-folder launcher from older versions (avoids double-launch)
       try { const old = winLegacyStartupVbsPath(); if (fs.existsSync(old)) fs.unlinkSync(old); } catch { /* ignore */ }
-      // register a per-user logon Scheduled Task via a .ps1 file (avoids inline-quoting issues)
+      // register autostart via the per-user HKCU Run key (no admin required)
       const ps1 = path.join(getDataDir(), "register-autostart.ps1");
       const vbsLit = vbs.replace(/'/g, "''");
       const regScript =
         `$ErrorActionPreference = 'Stop'\r\n` +
         `$vbs = '${vbsLit}'\r\n` +
-        `$a = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument ('"' + $vbs + '"')\r\n` +
-        `$t = New-ScheduledTaskTrigger -AtLogOn\r\n` +
-        `$s = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero)\r\n` +
-        `Register-ScheduledTask -TaskName 'claudex-watch' -Action $a -Trigger $t -Settings $s -Force | Out-Null\r\n`;
+        `$cmd = 'wscript.exe "' + $vbs + '"'\r\n` +
+        `$run = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'\r\n` +
+        `New-ItemProperty -Path $run -Name 'claudex-watch' -Value $cmd -PropertyType String -Force | Out-Null\r\n`;
       fs.writeFileSync(ps1, regScript);
       execFileSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ps1],
         { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-      console.log("Auto-start enabled (Windows logon task: claudex-watch).");
+      console.log("Auto-start enabled (Windows Run key: claudex-watch).");
     } else if (process.platform === "darwin") {
       const plist = macPlistPath();
       fs.mkdirSync(path.dirname(plist), { recursive: true });
@@ -305,9 +304,10 @@ async function disableAutostart() {
     if (process.platform === "win32") {
       try {
         execFileSync("powershell.exe",
-          ["-NoProfile", "-Command", "Unregister-ScheduledTask -TaskName 'claudex-watch' -Confirm:$false"],
+          ["-NoProfile", "-Command",
+           "Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'claudex-watch' -ErrorAction SilentlyContinue"],
           { stdio: "ignore" });
-      } catch { /* task may not exist */ }
+      } catch { /* value may not exist */ }
       const vbs = winVbsPath();
       if (fs.existsSync(vbs)) fs.unlinkSync(vbs);
       try { const old = winLegacyStartupVbsPath(); if (fs.existsSync(old)) fs.unlinkSync(old); } catch { /* ignore */ }
