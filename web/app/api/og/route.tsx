@@ -78,7 +78,7 @@ export async function GET() {
               }}
             />
             <span style={{ fontSize: 28, fontWeight: 800, color: "#F5F4EF", marginLeft: 13, lineHeight: 1 }}>
-              claudex
+              Contextis
             </span>
             <span style={{ fontSize: 20, color: "#7C7970", marginLeft: 15, lineHeight: 1 }}>
               WRAPPED · 30 DAYS
