@@ -130,7 +130,7 @@ export default async function Leaderboard({
         </div>
 
         <p className="mt-8 text-center text-xs text-[#9B988F]">
-          Only aggregate token counts are shown — never your code or prompts.
+          Onwards and Upwards 🚀
         </p>
       </div>
     </main>
