@@ -143,7 +143,7 @@ function printBuckets() {
 async function syncToServer(force = false) {
   const cfg = loadConfig();
   if (!cfg.token || !cfg.serverUrl) {
-    console.log("Not configured. Run: claudex login <token> --server <url>");
+    console.log("Not configured. Run: claudiom login <token> --server <url>");
     return;
   }
   if (!force && cfg.lastSyncAt && Date.now() - cfg.lastSyncAt < 60_000) {
@@ -227,7 +227,7 @@ async function enableAutostart() {
   if (!target) {
     console.log(
       "Auto-start needs the built binary. Run: npm run build && npm link, " +
-      "then `claudex login <token> --server <url>` (not `npx tsx`)."
+      "then `claudiom login <token> --server <url>` (not `npx tsx`)."
     );
     return;
   }
@@ -329,7 +329,7 @@ async function disableAutostart() {
 }
 
 const program = new Command();
-program.name("claudex").description("Claude Code usage tracker").version("0.1.0");
+program.name("claudiom").description("Claude Code usage tracker").version("0.1.0");
 
 program.command("login").argument("<token>").option("--server <url>", "ingest endpoint URL")
   .action(async (token: string, opts: { server?: string }) => {
