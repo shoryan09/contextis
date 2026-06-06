@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-const file = 'dist/collect.js';
+const file = 'bin/claudiom.js';
 let content = readFileSync(file, 'utf8');
 content = content.replace(/\r\n/g, '\n');
 if (!content.startsWith('#!/usr/bin/env node\n')) {

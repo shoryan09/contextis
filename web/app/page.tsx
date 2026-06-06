@@ -29,7 +29,7 @@ export default async function Home() {
     <main className={`${sans.className} flex min-h-screen flex-col bg-[#FAF9F5] text-[#141413]`}>
       {/* top bar */}
       <header className="flex items-center justify-between px-8 py-6">
-        <span className={`${serif.className} text-xl font-medium tracking-tight`}>claudex</span>
+        <span className={`${serif.className} text-xl font-medium tracking-tight`}>Claudiom</span>
         {session?.user && (
           <form action={async () => { "use server"; await signOut(); }}>
             <button className="cursor-pointer text-sm text-[#73706B] transition hover:text-[#141413]">
@@ -65,11 +65,11 @@ export default async function Home() {
             </form>
 
             <Link
-  href="/leaderboard"
-  className="mt-6 inline-block text-sm text-[#6B6862] underline-offset-4 transition hover:text-[#CC785C] hover:underline"
->
-  Or peek at the leaderboard →
-</Link>
+              href="/leaderboard"
+              className="mt-6 inline-block text-sm text-[#6B6862] underline-offset-4 transition hover:text-[#CC785C] hover:underline"
+            >
+              Or peek at the leaderboard →
+            </Link>
 
             <p className="mt-6 text-xs text-[#9B988F]">
               Only aggregate stats are stored — never your code or prompts.
@@ -82,7 +82,7 @@ export default async function Home() {
               Welcome back, {session.user.name?.split(" ")[0] ?? "there"}.
             </h1>
             <p className="mt-3 text-[15px] text-[#6B6862]">
-              Connect the CLI with your personal token, then run a sync.
+              Install the CLI, connect it with your personal token, then run a sync.
             </p>
 
             <div className="mt-7">
@@ -99,24 +99,24 @@ export default async function Home() {
                 Connect your CLI
               </p>
               <pre className="overflow-x-auto rounded-xl border border-[#E5E2D9] bg-[#F0EEE6] px-4 py-3 font-mono text-sm text-[#6B6862]">
-                npx tsx collect.ts login {cliToken} --server http://localhost:3000/api/ingest
+                {`npm install -g claudiom\nclaudiom login ${cliToken} --server https://YOUR-APP.vercel.app/api/ingest`}
               </pre>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-  <Link
-    href="/dashboard"
-    className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#141413] px-7 py-3.5 text-[15px] font-medium text-[#FAF9F5] shadow-sm transition hover:bg-black hover:shadow-md"
-  >
-    Open your dashboard <span aria-hidden>→</span>
-  </Link>
-  <Link
-    href="/leaderboard"
-    className="inline-flex cursor-pointer items-center rounded-full border border-[#E0DDD2] px-7 py-3.5 text-[15px] font-medium text-[#141413] transition hover:border-[#CC785C] hover:text-[#CC785C]"
-  >
-    Leaderboard
-  </Link>
-</div>
+              <Link
+                href="/dashboard"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#141413] px-7 py-3.5 text-[15px] font-medium text-[#FAF9F5] shadow-sm transition hover:bg-black hover:shadow-md"
+              >
+                Open your dashboard <span aria-hidden>→</span>
+              </Link>
+              <Link
+                href="/leaderboard"
+                className="inline-flex cursor-pointer items-center rounded-full border border-[#E0DDD2] px-7 py-3.5 text-[15px] font-medium text-[#141413] transition hover:border-[#CC785C] hover:text-[#CC785C]"
+              >
+                Leaderboard
+              </Link>
+            </div>
           </div>
         )}
       </div>

@@ -1,7 +1,8 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["collect.ts"],
+  entry: { claudiom: "collect.ts" },
+  outDir: "bin",
   format: ["esm"],
   target: "node16",
   clean: true,

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Claude Code usage analytics CLI",
   "type": "module",
-  "bin": { "claudiom": "./dist/collect.js" },
-  "files": ["dist"],
+  "bin": { "claudiom": "bin/claudiom.js" },
+  "files": ["bin"],
   "scripts": {
     "build": "tsup && node scripts/add-shebang.mjs",
     "dev": "tsx collect.ts"
