@@ -69,7 +69,7 @@ export default async function Leaderboard({
     <main className={`${sans.className} min-h-screen bg-[#FAF9F5] text-[#141413]`}>
       <header className="border-b border-[#ECEAE2]">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
-          <Link href="/" className={`${serif.className} text-lg font-medium tracking-tight`}>Claudiom</Link>
+          <Link href="/" className={`${serif.className} text-lg font-medium tracking-tight`}>Contextis</Link>
           {session?.user ? (
             <Link href="/dashboard" className="text-sm text-[#6B6862] transition hover:text-[#141413]">My dashboard</Link>
           ) : (
