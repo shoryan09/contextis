@@ -43,16 +43,28 @@ export default async function Leaderboard({
 
   // who am I (for highlighting)?
   const session = await auth();
+  
   let meId = "";
+  let meUser: any = null;
   if (session?.user) {
-    const me = await User.findOne({ githubId: (session as any).githubId }).lean();
-    meId = me ? String((me as any)._id) : "";
+    meUser = await User.findOne({ githubId: (session as any).githubId }).lean();
+    meId = meUser ? String((meUser as any)._id) : "";
   }
 
   const rows = agg.map((a, i) => {
     const u = userMap.get(a._id) as any;
     return { rank: i + 1, id: a._id, name: u?.name ?? "Anonymous coder", image: u?.image ?? "", total: a.total };
   });
+
+  if (meId && meUser && !rows.some((r) => r.id === meId)) {
+  rows.push({
+    rank: rows.length + 1,
+    id: meId,
+    name: meUser.name ?? "Anonymous coder",
+    image: meUser.image ?? "",
+    total: 0,
+  });
+}
 
   const tab = (r: "7d" | "30d", label: string) => (
     <Link

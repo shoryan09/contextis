@@ -138,6 +138,16 @@ function printBuckets() {
     console.log(`${b.date} ${String(b.hour).padStart(2, "0")}h | ${b.model} | ${b.project} | in:${b.inTokens} out:${b.outTokens} cacheR:${b.cacheRead} msgs:${b.messages} sessions:${b.sessions.length}`);
 }
 
+function resetStateToNow() {
+  const files = findJsonlFiles(PROJECTS_DIR);
+  const fileMap: Record<string, { offset: number }> = {};
+  for (const f of files) {
+    try { fileMap[f] = { offset: fs.statSync(f).size }; } catch { /* skip */ }
+  }
+  saveState({ version: 1, files: fileMap, seenUuids: [], buckets: {} });
+  console.log("Local state reset — tracking new activity from this point.");
+}
+
 async function syncToServer(force = false) {
   const cfg = loadConfig();
   if (!cfg.token || !cfg.serverUrl) {
@@ -323,7 +333,7 @@ program.command("login").argument("<token>").option("--server <url>", "ingest en
     saveConfig(cfg);
     console.log(`Saved. token: set | server: ${cfg.serverUrl ?? "(none — pass --server)"}`);
     await enableAutostart();
-    runScan();
+    resetStateToNow();
     await syncToServer(true);
   });
 
