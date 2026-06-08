@@ -31,12 +31,21 @@ export default async function Home() {
       <header className="flex items-center justify-between px-8 py-6">
         <span className={`${serif.className} text-xl font-medium tracking-tight`}>Contextis</span>
         {session?.user && (
-          <form action={async () => { "use server"; await signOut(); }}>
-            <button className="cursor-pointer text-sm text-[#8C8984] transition hover:text-[#F0EDE6]">
-              Sign out
-            </button>
-          </form>
-        )}
+  <div className="flex items-center gap-5">
+    <Link
+      href="/how-it-works"
+      className="text-sm text-[#9B988F] transition hover:text-[#F0EDE6]"
+    >
+      How it works
+    </Link>
+
+    <form action={async () => { "use server"; await signOut(); }}>
+      <button className="cursor-pointer text-sm text-[#9B988F] transition hover:text-[#F0EDE6]">
+        Sign out
+      </button>
+    </form>
+  </div>
+)}
       </header>
 
       {/* center */}
