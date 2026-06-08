@@ -1,7 +1,6 @@
 
-import { Fraunces, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const serif = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"] });
 const sans  = Inter({ subsets: ["latin"] });
 
 const BONE = "bg-[#2C2C2A] rounded";
@@ -9,13 +8,6 @@ const BONE = "bg-[#2C2C2A] rounded";
 export default function LeaderboardLoading() {
   return (
     <main className={`${sans.className} min-h-screen bg-[#141413] text-[#F0EDE6] animate-pulse`}>
-      {/* header */}
-      <header className="border-b border-[#2C2C2A]">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
-          <span className={`${serif.className} text-lg font-medium`}>Contextis</span>
-          <div className={`${BONE} h-4 w-20`} />
-        </div>
-      </header>
 
       <div className="mx-auto max-w-3xl px-6 py-10">
         {/* page title row */}
