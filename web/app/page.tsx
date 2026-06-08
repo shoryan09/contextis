@@ -1,11 +1,36 @@
+
 import Link from "next/link";
 import { Fraunces, Inter } from "next/font/google";
 import { auth, signIn, signOut } from "@/auth";
 import { connectDB } from "@/lib/mongo";
 import { User } from "@/models/user";
+import CopyButton from "@/components/CopyButton";
 
 const serif = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"] });
 const sans = Inter({ subsets: ["latin"] });
+
+const STEPS = [
+  {
+    title: "Sign in with GitHub",
+    desc: "Create your account and get a personal CLI token tied to your GitHub profile.",
+  },
+  {
+    title: "Install the CLI",
+    desc: "Run npm install -g contextis to add the lightweight background agent to your machine.",
+  },
+  {
+    title: "Connect your token",
+    desc: "Link the CLI to your account with a single command using the token shown after sign-in.",
+  },
+  {
+    title: "Code with Claude",
+    desc: "Use Claude Code as you normally would. Contextis watches your usage logs silently in the background.",
+  },
+  {
+    title: "See your Wrapped",
+    desc: "Head to your dashboard for token breakdowns, session stats, streaks, and your developer archetype.",
+  },
+];
 
 function GitHubIcon() {
   return (
@@ -25,84 +50,160 @@ export default async function Home() {
     cliToken = user?.cliToken ?? "";
   }
 
+  const npmCmd     = "npm install -g contextis";
+  const loginCmd   = `contextis login ${cliToken} --server https://contextis.vercel.app/api/ingest`;
+
   return (
     <main className={`${sans.className} flex min-h-screen flex-col bg-[#141413] text-[#F0EDE6]`}>
-      {/* top bar */}
+      {/* ── header ── */}
       <header className="flex items-center justify-between px-8 py-6">
         <span className={`${serif.className} text-xl font-medium tracking-tight`}>Contextis</span>
         {session?.user && (
-          <form action={async () => { "use server"; await signOut(); }}>
-            <button className="cursor-pointer text-sm text-[#8C8984] transition hover:text-[#F0EDE6]">
-              Sign out
-            </button>
-          </form>
+          <div className="flex items-center gap-5">
+            <a
+              href="#how-it-works"
+              className="text-sm text-[#9B988F] transition hover:text-[#F0EDE6]"
+            >
+              How it works
+            </a>
+            <form action={async () => { "use server"; await signOut(); }}>
+              <button className="cursor-pointer text-sm text-[#9B988F] transition hover:text-[#F0EDE6]">
+                Sign out
+              </button>
+            </form>
+          </div>
         )}
       </header>
 
-      {/* center */}
-      <div className="flex flex-1 items-center justify-center px-6 pb-24">
+      {/* ── main content ── */}
+      <div className="flex flex-1 items-start justify-center px-6 py-12">
         {!session?.user ? (
-          /* ---------- signed out ---------- */
-          <div className="w-full max-w-md text-center">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#CC785C]">
-              Claude Code, wrapped
-            </p>
-            <h1 className={`${serif.className} mt-5 text-5xl leading-[1.1] tracking-tight`}>
-              See how you code with Claude.
-            </h1>
-            <p className="mx-auto mt-5 max-w-sm text-[15px] leading-relaxed text-[#9B988F]">
-              Your tokens, models, and coding habits — quietly tracked and turned
-              into a personal recap.
-            </p>
 
-            <form className="mt-9" action={async () => { "use server"; await signIn("github"); }}>
-              <button
-                className="inline-flex cursor-pointer items-center gap-3 rounded-full bg-[#F0EDE6] px-7 py-3.5 text-[15px] font-medium text-[#141413] shadow-sm transition hover:bg-[#E4E1DA] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#CC785C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
+          /* ── signed out ── */
+          <div className="w-full max-w-md">
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#CC785C]">
+                Claude Code, wrapped
+              </p>
+              <h1 className={`${serif.className} mt-5 text-5xl leading-[1.1] tracking-tight`}>
+                See how you code with Claude.
+              </h1>
+              <p className="mx-auto mt-5 max-w-sm text-[15px] leading-relaxed text-[#9B988F]">
+                Your tokens, models, and coding habits — quietly tracked and turned
+                into a personal recap.
+              </p>
+
+              <form className="mt-9" action={async () => { "use server"; await signIn("github"); }}>
+                <button className="inline-flex cursor-pointer items-center gap-3 rounded-full bg-[#F0EDE6] px-7 py-3.5 text-[15px] font-medium text-[#141413] shadow-sm transition hover:bg-[#E4E1DA] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#CC785C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]">
+                  <GitHubIcon />
+                  Sign in with GitHub
+                </button>
+              </form>
+
+              <Link
+                href="/leaderboard"
+                className="mt-6 inline-block text-sm text-[#9B988F] underline-offset-4 transition hover:text-[#CC785C] hover:underline"
               >
-                <GitHubIcon />
-                Sign in with GitHub
-              </button>
-            </form>
+                Or peek at the leaderboard →
+              </Link>
 
-            <Link
-              href="/leaderboard"
-              className="mt-6 inline-block text-sm text-[#9B988F] underline-offset-4 transition hover:text-[#CC785C] hover:underline"
-            >
-              Or peek at the leaderboard →
-            </Link>
+              <p className="mt-6 text-xs text-[#6B6862]">
+                Only aggregate stats are stored — never your code or prompts.
+              </p>
+            </div>
 
-            <p className="mt-6 text-xs text-[#6B6862]">
-              Only aggregate stats are stored — never your code or prompts.
-            </p>
+            {/* ── how it works ── */}
+            <div className="mt-14 border-t border-[#2C2C2A] pt-10">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#6B6862]">
+                How it works
+              </p>
+              <ol className="mt-5 space-y-5">
+                {STEPS.map((step, i) => (
+                  <li key={i} className="flex items-start gap-4">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#CC785C]/15 text-sm font-medium text-[#CC785C]">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-medium text-[#F0EDE6]">{step.title}</p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-[#9B988F]">{step.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
+
         ) : (
-          /* ---------- signed in ---------- */
+
+          /* ── signed in ── */
           <div className="w-full max-w-lg">
             <h1 className={`${serif.className} text-4xl tracking-tight`}>
               Welcome back, {session.user.name?.split(" ")[0] ?? "there"}.
             </h1>
             <p className="mt-3 text-[15px] text-[#9B988F]">
-              Install the CLI, connect it with your personal token, then run a sync.
+              Follow the steps below to connect the CLI and start tracking your usage.
             </p>
 
-            <div className="mt-7">
+            {/* ── how it works ── */}
+            <div id="how-it-works" className="mt-7 rounded-2xl border border-[#2C2C2A] bg-[#1C1C1A] p-5">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#6B6862]">
+                How it works
+              </p>
+              <ol className="mt-4 space-y-3">
+                {[
+                  ["Copy your token below", "Your personal key that links the CLI to your account."],
+                  ["Install & connect the CLI", "Run both commands in your terminal, in order."],
+                  ["Code with Claude normally", "Contextis runs silently, syncing your usage in the background."],
+                  ["Come back here", "Your dashboard updates as you code — tokens, sessions, streaks, all tracked."],
+                ].map(([title, desc], i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#CC785C]/15 text-xs font-medium text-[#CC785C]">
+                      {i + 1}
+                    </span>
+                    <p>
+                      <span className="font-medium text-[#F0EDE6]">{title}</span>
+                      <span className="text-[#9B988F]"> — {desc}</span>
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* ── cli token ── */}
+            <div className="mt-6">
               <p className="mb-2 text-xs font-medium uppercase tracking-wider text-[#6B6862]">
                 Your CLI token
               </p>
-              <pre className="overflow-x-auto rounded-xl border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-3 font-mono text-sm text-[#F0EDE6]">
-                {cliToken || "—"}
-              </pre>
+              <div className="relative">
+                <pre className="overflow-x-auto rounded-xl border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-3 pr-20 font-mono text-sm text-[#F0EDE6]">
+                  {cliToken || "—"}
+                </pre>
+                {cliToken && <CopyButton text={cliToken} />}
+              </div>
             </div>
 
-            <div className="mt-5">
+            {/* ── connect commands ── */}
+            <div className="mt-4">
               <p className="mb-2 text-xs font-medium uppercase tracking-wider text-[#6B6862]">
                 Connect your CLI
               </p>
-              <pre className="overflow-x-auto rounded-xl border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-3 font-mono text-sm text-[#9B988F]">
-                {`npm install -g contextis\ncontextis login ${cliToken} --server https://contextis.vercel.app/api/ingest`}
-              </pre>
+              <div className="space-y-2">
+                <div className="relative">
+                  <pre className="overflow-x-auto rounded-xl border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-3 pr-20 font-mono text-sm text-[#9B988F]">
+                    {npmCmd}
+                  </pre>
+                  <CopyButton text={npmCmd} />
+                </div>
+                <div className="relative">
+                  <pre className="overflow-x-auto rounded-xl border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-3 pr-20 font-mono text-sm text-[#9B988F]">
+                    {loginCmd}
+                  </pre>
+                  <CopyButton text={loginCmd} />
+                </div>
+              </div>
             </div>
 
+            {/* ── nav buttons ── */}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/dashboard"
@@ -118,6 +219,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
+
         )}
       </div>
     </main>
