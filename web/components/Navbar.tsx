@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { Fraunces } from "next/font/google";
-import { signOutAction } from "@/app/actions";
+import { signOutAction, deleteAccountAction } from "@/app/actions";
 
 const serif = Fraunces({ subsets: ["latin"], weight: ["500"] });
 
@@ -14,25 +14,28 @@ type NavUser = { name?: string | null; image?: string | null } | null | undefine
 export default function Navbar({ user }: { user: NavUser }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const closeMenu = () => {
+    setOpen(false);
+    setConfirmDelete(false);
+  };
 
   // close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) closeMenu();
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   // close dropdown whenever the route changes
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => { closeMenu(); }, [pathname]);
 
-  const links = [
-    { href: "/dashboard",    label: "Dashboard",    authOnly: true  },
-    { href: "/leaderboard",  label: "Leaderboard",  authOnly: false },
-    { href: "/how-it-works", label: "How it works", authOnly: false },
-  ].filter((l) => !l.authOnly || user);
+  const itemCls =
+    "block w-full px-4 py-2 text-left text-sm text-[#9B988F] transition hover:bg-[#242422] hover:text-[#F0EDE6]";
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#141413]/70 backdrop-blur-md">
@@ -46,28 +49,23 @@ export default function Navbar({ user }: { user: NavUser }) {
         </Link>
 
         {/* right side */}
-        <div className="flex items-center gap-1">
-          {links.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-full px-3.5 py-1.5 text-sm transition ${
-                  active
-                    ? "bg-[#2C2C2A] text-[#F0EDE6]"
-                    : "text-[#9B988F] hover:text-[#F0EDE6]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        <div className="flex items-center gap-2">
+          {/* the only top-level link */}
+          <Link
+            href="/how-it-works"
+            className={`rounded-full px-3.5 py-1.5 text-sm transition ${
+              pathname === "/how-it-works"
+                ? "bg-[#2C2C2A] text-[#F0EDE6]"
+                : "text-[#9B988F] hover:text-[#F0EDE6]"
+            }`}
+          >
+            How it works
+          </Link>
 
           {user ? (
-            <div className="relative ml-2" ref={menuRef}>
+            <div className="relative" ref={menuRef}>
               <button
-                onClick={() => setOpen((o) => !o)}
+                onClick={() => { setOpen((o) => !o); setConfirmDelete(false); }}
                 className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[#2C2C2A] transition hover:border-[#CC785C] focus:outline-none focus-visible:border-[#CC785C]"
                 aria-label="Account menu"
               >
@@ -88,27 +86,40 @@ export default function Navbar({ user }: { user: NavUser }) {
                       <p className="truncate text-sm font-medium text-[#F0EDE6]">{user.name}</p>
                     </div>
                   )}
-                  <Link
-                    href="/dashboard"
-                    className="block px-4 py-2 text-sm text-[#9B988F] transition hover:bg-[#242422] hover:text-[#F0EDE6]"
-                  >
-                    Dashboard
-                  </Link>
+
+                  <Link href="/dashboard" className={itemCls}>Dashboard</Link>
+                  <Link href="/leaderboard" className={itemCls}>Leaderboard</Link>
+
+                  <div className="my-1 border-t border-[#2C2C2A]" />
+
                   <form action={signOutAction}>
-                    <button
-                      type="submit"
-                      className="block w-full px-4 py-2 text-left text-sm text-[#9B988F] transition hover:bg-[#242422] hover:text-[#F0EDE6]"
-                    >
-                      Sign out
-                    </button>
+                    <button type="submit" className={itemCls}>Sign out</button>
                   </form>
+
+                  {!confirmDelete ? (
+                    <button
+                      onClick={() => setConfirmDelete(true)}
+                      className="block w-full px-4 py-2 text-left text-sm text-[#D97066] transition hover:bg-[#2A1A14]"
+                    >
+                      Delete account
+                    </button>
+                  ) : (
+                    <form action={deleteAccountAction}>
+                      <button
+                        type="submit"
+                        className="block w-full px-4 py-2 text-left text-sm font-medium text-[#E5705F] transition hover:bg-[#2A1A14]"
+                      >
+                        Click again to confirm
+                      </button>
+                    </form>
+                  )}
                 </div>
               )}
             </div>
           ) : (
             <Link
               href="/"
-              className="ml-2 rounded-full bg-[#F0EDE6] px-4 py-1.5 text-sm font-medium text-[#141413] transition hover:bg-[#E4E1DA]"
+              className="rounded-full bg-[#F0EDE6] px-4 py-1.5 text-sm font-medium text-[#141413] transition hover:bg-[#E4E1DA]"
             >
               Sign in
             </Link>
