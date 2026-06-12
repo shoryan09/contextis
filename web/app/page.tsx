@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Fraunces, Inter } from "next/font/google";
 import { auth, signIn } from "@/auth";
+import { connectDB } from "@/lib/mongo";
+import { User } from "@/models/user";
 
 const serif = Fraunces({ subsets: ["latin"], weight: ["400", "500", "600"] });
 const sans = Inter({ subsets: ["latin"] });
@@ -26,9 +28,19 @@ export default async function Home() {
 
   /* ════════════════ SIGNED-IN: minimal setup screen ════════════════ */
   if (signedIn) {
-    // TODO: replace with the user's real ingest token
-    // e.g. fetch after connectDB(): const token = user.apiToken;
-    const token = "<your-token>";
+    // pull the user's real ingest token from the DB
+    await connectDB();
+    const me = await User.findOne(
+      { githubId: (session as any).githubId },
+      { token: 1, apiToken: 1, ingestToken: 1, cliToken: 1 }
+    ).lean();
+    // 👇 if the command shows "<your-token>", swap this for your actual field name
+    const token =
+      (me as any)?.token ??
+      (me as any)?.apiToken ??
+      (me as any)?.ingestToken ??
+      (me as any)?.cliToken ??
+      "<your-token>";
     const firstName = session!.user!.name?.split(" ")[0] ?? "there";
 
     return (
