@@ -58,6 +58,9 @@ export default async function Home() {
               </button>
             </form>
           )}
+          <Link href="/leaderboard" className="rounded-full border border-[#2C2C2A] px-5 py-2.5 text-sm text-[#D4D1CA] transition hover:border-[#383836]">
+            Leaderboard
+          </Link>
         </div>
 
         <code className="mt-8 inline-block rounded-lg border border-[#2C2C2A] bg-[#1C1C1A] px-4 py-2 text-sm text-[#9B988F]">
